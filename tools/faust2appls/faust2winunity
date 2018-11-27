@@ -82,11 +82,11 @@ for p in $FILES; do
 
     # create a temporary dir
     TDR=$(mktemp -d faust.XXXXXX)
-    TMP=$TDR/$NAME
-    mkdir "$TMP"
+    TEMP=$TDR/$NAME
+    mkdir "$TEMP"
 
     # compile faust to c++
-    faust -i -a $FAUSTLIB/unity/unityplugin.cpp $OPTIONS "$SRCDIR/$f" -o "$TMP/$NAME.cpp" || (echo "$f : Faust to C++ compilation failed in faust2unitywin"; exit 1)
+    faust -i -a $FAUSTLIB/unity/unityplugin.cpp $OPTIONS "$SRCDIR/$f" -o "$TEMP/$NAME.cpp" || (echo "$f : Faust to C++ compilation failed in faust2unitywin"; exit 1)
 
     for BIT in $BITS; do
         #-----------------------------------------------------------------------
@@ -110,7 +110,7 @@ for p in $FILES; do
 
         # compile c++ to binary
        	(
-            cd "$TMP"
+            cd "$TEMP"
             if [ $NVOICES == -1 ]; then
             	$CXX $CXXFLAGS $PROCARCH $LIB $OMP -static-libstdc++ -static-libgcc -Dmydsp=$NAME -o $LIBNAME $NAME.cpp
             else
@@ -119,7 +119,7 @@ for p in $FILES; do
         ) > /dev/null || (echo "$f : C++ to win$BIT library compilation failed in faust2unitywin"; exit 1)
 		 
         # moves binary to final dir
-        mv "$TMP/$LIBNAME" "$FIN/$LIBNAME"
+        mv "$TEMP/$LIBNAME" "$FIN/$LIBNAME"
         echo "$f : w$BIT compilation completed"
     done
 
